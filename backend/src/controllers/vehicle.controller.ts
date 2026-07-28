@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,} from "../services/vehicle.service";
+import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,searchVehicles,} from "../services/vehicle.service";
 import mongoose from "mongoose";
 
 export const addVehicle = async (
@@ -145,6 +145,71 @@ export const deleteVehicle = async (
 
     res.status(200).json({
       message: "Vehicle deleted successfully",
+    });
+  } catch {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+export const searchVehicle = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const {
+      make,
+      model,
+      category,
+      minPrice,
+      maxPrice,
+    } = req.query;
+
+    const min =
+      minPrice !== undefined
+        ? Number(minPrice)
+        : undefined;
+
+    const max =
+      maxPrice !== undefined
+        ? Number(maxPrice)
+        : undefined;
+
+    if (
+      (min !== undefined && Number.isNaN(min)) ||
+      (max !== undefined && Number.isNaN(max))
+    ) {
+      res.status(400).json({
+        message: "Price must be a valid number",
+      });
+      return;
+    }
+
+    if (
+      min !== undefined &&
+      max !== undefined &&
+      min > max
+    ) {
+      res.status(400).json({
+        message: "Minimum price cannot exceed maximum price",
+      });
+      return;
+    }
+
+    const vehicles = await searchVehicles({
+      make: typeof make === "string" ? make : undefined,
+      model: typeof model === "string" ? model : undefined,
+      category:
+        typeof category === "string"
+          ? category
+          : undefined,
+      minPrice: min,
+      maxPrice: max,
+    });
+
+    res.status(200).json({
+      vehicles,
     });
   } catch {
     res.status(500).json({

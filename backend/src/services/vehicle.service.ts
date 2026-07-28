@@ -41,3 +41,60 @@ export const updateVehicleById = async (
 export const deleteVehicleById = async (id: string) => {
   return await Vehicle.findByIdAndDelete(id);
 };
+
+interface VehicleSearchFilters {
+  make?: string;
+  model?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+export const searchVehicles = async (
+  filters: VehicleSearchFilters
+) => {
+  const query: Record<string, unknown> = {};
+
+  if (filters.make) {
+    query.make = {
+      $regex: filters.make,
+      $options: "i",
+    };
+  }
+
+  if (filters.model) {
+    query.model = {
+      $regex: filters.model,
+      $options: "i",
+    };
+  }
+
+  if (filters.category) {
+    query.category = {
+      $regex: filters.category,
+      $options: "i",
+    };
+  }
+
+  if (
+    filters.minPrice !== undefined ||
+    filters.maxPrice !== undefined
+  ) {
+    const priceQuery: {
+      $gte?: number;
+      $lte?: number;
+    } = {};
+
+    if (filters.minPrice !== undefined) {
+      priceQuery.$gte = filters.minPrice;
+    }
+
+    if (filters.maxPrice !== undefined) {
+      priceQuery.$lte = filters.maxPrice;
+    }
+
+    query.price = priceQuery;
+  }
+
+  return await Vehicle.find(query);
+};

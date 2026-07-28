@@ -417,3 +417,123 @@ describe("DELETE /api/vehicles/:id", () => {
     expect(deletedVehicle).toBeNull();
     });
 });
+
+
+describe("GET /api/vehicles/search", () => {
+  beforeEach(async () => {
+    await Vehicle.create([
+      {
+        make: "Toyota",
+        model: "Fortuner",
+        category: "SUV",
+        price: 45000,
+        quantity: 5,
+      },
+      {
+        make: "Honda",
+        model: "Civic",
+        category: "Sedan",
+        price: 30000,
+        quantity: 3,
+      },
+      {
+        make: "Toyota",
+        model: "Camry",
+        category: "Sedan",
+        price: 35000,
+        quantity: 4,
+      },
+    ]);
+  });
+
+  it("should search vehicles by make", async () => {
+    const response = await request(app)
+      .get("/api/vehicles/search?make=Toyota")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(2);
+  });
+
+  it("should search vehicles by model", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?model=Civic")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(1);
+    expect(response.body.vehicles[0].model).toBe("Civic");
+    });
+
+    it("should search vehicles by minimum price", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?minPrice=35000")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(2);
+    });
+
+    it("should search vehicles by maximum price", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?maxPrice=35000")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(2);
+    });
+    it("should search vehicles by price range", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?minPrice=32000&maxPrice=40000")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(1);
+    expect(response.body.vehicles[0].model).toBe("Camry");
+    });
+    it("should combine multiple search filters", async () => {
+    const response = await request(app)
+        .get(
+        "/api/vehicles/search?make=Toyota&category=Sedan"
+        )
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(1);
+    expect(response.body.vehicles[0].model).toBe("Camry");
+    });
+
+    it("should return empty array when no vehicles match", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?make=BMW")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toEqual([]);
+    });
+
+    it("should return 401 when authentication token is missing", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?make=Toyota");
+
+    expect(response.status).toBe(401);
+    });
+
+    it("should return 400 when price is not a number", async () => {
+    const response = await request(app)
+        .get("/api/vehicles/search?minPrice=abc")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    });
+
+    it("should return 400 when minPrice is greater than maxPrice", async () => {
+    const response = await request(app)
+        .get(
+        "/api/vehicles/search?minPrice=50000&maxPrice=20000"
+        )
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    });
+});
