@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     const decodedUser = getUserFromToken(newToken);
 
     if (!decodedUser) {
-      return false;
+      return null;
     }
 
     localStorage.setItem("token", newToken);
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     setToken(newToken);
     setUser(decodedUser);
 
-    return true;
+    return decodedUser;
   };
 
   const logout = () => {
