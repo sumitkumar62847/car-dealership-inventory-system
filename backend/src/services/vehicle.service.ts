@@ -98,3 +98,28 @@ export const searchVehicles = async (
 
   return await Vehicle.find(query);
 };
+
+export const purchaseVehicleById = async (
+  id: string
+) => {
+  return await Vehicle.findOneAndUpdate(
+    {
+      _id: id,
+      quantity: { $gt: 0 },
+    },
+    {
+      $inc: {
+        quantity: -1,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+};
+
+export const getVehicleById = async (
+  id: string
+) => {
+  return await Vehicle.findById(id);
+};

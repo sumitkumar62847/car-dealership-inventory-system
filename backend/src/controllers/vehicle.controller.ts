@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,searchVehicles,} from "../services/vehicle.service";
+import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,searchVehicles,purchaseVehicleById, getVehicleById,} from "../services/vehicle.service";
 import mongoose from "mongoose";
 
 export const addVehicle = async (
@@ -210,6 +210,57 @@ export const searchVehicle = async (
 
     res.status(200).json({
       vehicles,
+    });
+  } catch {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+
+export const purchaseVehicle = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({
+        message: "Invalid vehicle ID",
+      });
+      return;
+    }
+
+    const vehicle = await getVehicleById(id);
+
+    if (!vehicle) {
+      res.status(404).json({
+        message: "Vehicle not found",
+      });
+      return;
+    }
+
+    if (vehicle.quantity <= 0) {
+      res.status(400).json({
+        message: "Vehicle out of stock",
+      });
+      return;
+    }
+
+    const updatedVehicle = await purchaseVehicleById(id);
+
+    if (!updatedVehicle) {
+      res.status(400).json({
+        message: "Vehicle out of stock",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Vehicle purchased successfully",
+      vehicle: updatedVehicle,
     });
   } catch {
     res.status(500).json({
