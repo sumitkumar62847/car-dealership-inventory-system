@@ -9,14 +9,26 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
         <Route
           path="/register"
@@ -25,9 +37,18 @@ function App() {
 
         <Route
           path="/admin"
-          element={<AdminDashboard />}
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
         />
-        <Route path="*" element={<NotFound />} />
+
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
+
       </Routes>
     </BrowserRouter>
   );
