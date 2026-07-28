@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,searchVehicles,purchaseVehicleById, getVehicleById,} from "../services/vehicle.service";
+import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,searchVehicles,purchaseVehicleById, getVehicleById,restockVehicleById,} from "../services/vehicle.service";
 import mongoose from "mongoose";
 
 export const addVehicle = async (
@@ -261,6 +261,55 @@ export const purchaseVehicle = async (
     res.status(200).json({
       message: "Vehicle purchased successfully",
       vehicle: updatedVehicle,
+    });
+  } catch {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+export const restockVehicle = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({
+        message: "Invalid vehicle ID",
+      });
+      return;
+    }
+
+    if (
+      typeof quantity !== "number" ||
+      !Number.isInteger(quantity) ||
+      quantity <= 0
+    ) {
+      res.status(400).json({
+        message: "Quantity must be a positive integer",
+      });
+      return;
+    }
+
+    const vehicle = await restockVehicleById(
+      id,
+      quantity
+    );
+
+    if (!vehicle) {
+      res.status(404).json({
+        message: "Vehicle not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Vehicle restocked successfully",
+      vehicle,
     });
   } catch {
     res.status(500).json({

@@ -123,3 +123,22 @@ export const getVehicleById = async (
 ) => {
   return await Vehicle.findById(id);
 };
+
+export const restockVehicleById = async (
+  id: string,
+  quantity: number
+) => {
+  return await Vehicle.findByIdAndUpdate(
+    id,
+    {
+      $inc: {
+        quantity,
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
+
