@@ -3,9 +3,10 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes";
 import vehicleRoutes from "./routes/vehicle.routes";
 
+
 const app = express();
 
-app.use(cors());
+app.use(cors({origin: "http://localhost:3000"}));
 app.use(express.json());
 
 app.get("/health", (req, res) => {
