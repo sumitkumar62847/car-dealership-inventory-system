@@ -66,4 +66,28 @@ describe("JWT Authentication Middleware", () => {
       message: "Protected route accessed",
     });
   });
+  it("should return 401 for an expired token", async () => {
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+        throw new Error("JWT_SECRET is not defined");
+    }
+
+    const token = jwt.sign(
+        {
+        userId: "123456",
+        role: "user",
+        },
+        secret,
+        {
+        expiresIn: -1,
+        }
+    );
+
+    const response = await request(testApp)
+        .get("/protected")
+        .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(401);
+    });
 });
