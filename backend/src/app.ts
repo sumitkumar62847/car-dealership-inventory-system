@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.get("/health", (req, res) => {
   res.status(200).json({
-    status: "ok",
+    status: "ok db",
   });
 });
 
