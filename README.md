@@ -297,8 +297,6 @@ git clone https://github.com/sumitkumar62847/car-dealership-inventory-system.git
 cd car-dealership
 ```
 
-Replace `https://github.com/sumitkumar62847/car-dealership-inventory-system.git` with the actual GitHub repository URL.
-
 ---
 
 ### 2. Backend Setup
