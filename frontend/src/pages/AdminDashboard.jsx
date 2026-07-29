@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import VehicleForm from "../components/VehicleForm";
-import { getVehicles,createVehicle, updateVehicle, } from "../services/api";
+import { getVehicles,createVehicle, updateVehicle, deleteVehicle, restockVehicle,} from "../services/api";
 
 
 const AdminDashboard = () => {
@@ -13,6 +13,9 @@ const AdminDashboard = () => {
     const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [formResetKey, setFormResetKey] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
+  const [restockAmounts, setRestockAmounts] = useState({});
+    const [restockingId, setRestockingId] = useState(null);
 
   const handleAddVehicle = async (vehicleData) => {
     try {
@@ -77,6 +80,93 @@ const AdminDashboard = () => {
             await handleAddVehicle(vehicleData);
         }
         };
+
+        const handleDelete = async (vehicleId) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this vehicle?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setDeletingId(vehicleId);
+            setError("");
+
+            await deleteVehicle(vehicleId);
+
+            setVehicles((currentVehicles) =>
+            currentVehicles.filter(
+                (vehicle) => vehicle._id !== vehicleId
+            )
+            );
+
+            if (selectedVehicle?._id === vehicleId) {
+            setSelectedVehicle(null);
+            }
+        } catch (error) {
+            setError(
+            error.response?.data?.message ||
+                "Failed to delete vehicle"
+            );
+        } finally {
+            setDeletingId(null);
+        }
+        };
+
+        const handleRestockChange = (
+        vehicleId,
+        value
+        ) => {
+        setRestockAmounts((current) => ({
+            ...current,
+            [vehicleId]: value,
+        }));
+        };
+
+        const handleRestock = async (vehicleId) => {
+            const quantity = Number(
+                restockAmounts[vehicleId]
+            );
+
+            if (!quantity || quantity <= 0) {
+                setError(
+                "Restock quantity must be greater than 0"
+                );
+                return;
+            }
+
+            try {
+                setRestockingId(vehicleId);
+                setError("");
+
+                const data = await restockVehicle(
+                vehicleId,
+                quantity
+                );
+
+                setVehicles((currentVehicles) =>
+                currentVehicles.map((vehicle) =>
+                    vehicle._id === vehicleId
+                    ? data.vehicle
+                    : vehicle
+                )
+                );
+
+                setRestockAmounts((current) => ({
+                ...current,
+                [vehicleId]: "",
+                }));
+            } catch (error) {
+                setError(
+                error.response?.data?.message ||
+                    "Failed to restock vehicle"
+                );
+            } finally {
+                setRestockingId(null);
+            }
+            };
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -230,13 +320,61 @@ const AdminDashboard = () => {
                       </td>
 
                       <td className="px-6 py-4">
-                        <button
+                        <div className="flex flex-wrap items-center gap-2">
+
+                            <button
                             type="button"
                             onClick={() => setSelectedVehicle(vehicle)}
                             className="rounded-lg bg-yellow-500 px-3 py-2 text-sm font-medium text-white hover:bg-yellow-600"
-                        >
+                            >
                             Edit
-                        </button>
+                            </button>
+
+                            <input
+                            type="number"
+                            min="1"
+                            value={restockAmounts[vehicle._id] || ""}
+                            onChange={(e) =>
+                                handleRestockChange(
+                                vehicle._id,
+                                e.target.value
+                                )
+                            }
+                            placeholder="Qty"
+                            className="w-20 rounded-lg border border-gray-300 px-2 py-2 text-sm"
+                            />
+
+                            <button
+                            type="button"
+                            onClick={() =>
+                                handleRestock(vehicle._id)
+                            }
+                            disabled={
+                                restockingId === vehicle._id
+                            }
+                            className="rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                            {restockingId === vehicle._id
+                                ? "Restocking..."
+                                : "Restock"}
+                            </button>
+
+                            <button
+                            type="button"
+                            onClick={() =>
+                                handleDelete(vehicle._id)
+                            }
+                            disabled={
+                                deletingId === vehicle._id
+                            }
+                            className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                            {deletingId === vehicle._id
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+
+                        </div>
                         </td>
                     </tr>
                   ))}
