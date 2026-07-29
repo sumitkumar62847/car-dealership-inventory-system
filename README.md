@@ -7,6 +7,11 @@ The application provides separate functionality for customers and administrators
 The main purpose of this project was to build a complete full-stack application while focusing on authentication, role-based authorization, REST APIs, inventory management, validation, and automated testing.
 
 ---
+The application is deployed with the frontend hosted on Vercel and the backend API hosted on Render.
+
+- **Frontend:** https://car-dealership-inventory-system-ten-sigma.vercel.app/
+- **Backend API:** https://car-dealership-inventory-system-pvrr.onrender.com
+- **Source Code:** https://github.com/sumitkumar62847/car-dealership-inventory-system
 
 ## Features
 
