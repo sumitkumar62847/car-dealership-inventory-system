@@ -111,13 +111,4 @@ export const restockVehicle = async (
 
 
 
-
-
-
-
-
-
-
-
-
 export default api;
