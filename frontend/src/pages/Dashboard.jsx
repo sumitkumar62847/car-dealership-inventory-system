@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { getVehicles } from "../services/api";
+import {
+  getVehicles,
+  searchVehicles,
+} from "../services/api";
+
+import SearchBar from "../components/SearchBar";
 import VehicleCard from "../components/VehicleCard";
 
 const Dashboard = () => {
@@ -8,25 +13,52 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      try {
+  const fetchVehicles = async () => {
+    try {
         setLoading(true);
         setError("");
 
         const data = await getVehicles();
 
-        setVehicles(data.vehicles);
-      } catch (error) {
+        setVehicles(data.vehicles || []);
+    } catch (error) {
         setError(
-          error.response?.data?.message ||
+        error.response?.data?.message ||
             "Failed to load vehicles"
         );
-      } finally {
+    } finally {
         setLoading(false);
-      }
+    }
+    };
+    const handleSearch = async (filters) => {
+    try {
+        setLoading(true);
+        setError("");
+
+        const cleanFilters = Object.fromEntries(
+        Object.entries(filters).filter(
+            ([, value]) => value !== ""
+        )
+        );
+
+        const data = await searchVehicles(cleanFilters);
+
+        setVehicles(data.vehicles || []);
+    } catch (error) {
+        setError(
+        error.response?.data?.message ||
+            "Failed to search vehicles"
+        );
+    } finally {
+        setLoading(false);
+    }
     };
 
+    const handleReset = async () => {
+        await fetchVehicles();
+    };
+
+  useEffect(() => {
     fetchVehicles();
   }, []);
 
@@ -44,6 +76,11 @@ const Dashboard = () => {
             Browse our available vehicles.
           </p>
         </div>
+
+        <SearchBar
+        onSearch={handleSearch}
+        onReset={handleReset}
+        />
 
         {loading && (
           <p className="text-gray-600">
