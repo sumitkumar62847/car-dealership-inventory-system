@@ -1,6 +1,17 @@
 import { Request, Response } from "express";
-import { createVehicle,getAllVehicles, updateVehicleById,deleteVehicleById,searchVehicles,purchaseVehicleById, getVehicleById,restockVehicleById,} from "../services/vehicle.service";
 import mongoose from "mongoose";
+
+import {
+  createVehicle,
+  getAllVehicles,
+  updateVehicleById,
+  deleteVehicleById,
+  searchVehicles,
+  purchaseVehicleById,
+  getVehicleById,
+  restockVehicleById,
+} from "../services/vehicle.service";
+
 
 export const addVehicle = async (
   req: Request,
@@ -54,6 +65,7 @@ export const addVehicle = async (
   }
 };
 
+
 export const getVehicles = async (
   req: Request,
   res: Response
@@ -71,13 +83,21 @@ export const getVehicles = async (
   }
 };
 
+
 export const updateVehicle = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const { make, model, category, price, quantity } = req.body;
+
+    // Express typings may allow id to be string | string[]
+    if (typeof id !== "string") {
+      res.status(400).json({
+        message: "Invalid vehicle ID",
+      });
+      return;
+    }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({
@@ -86,6 +106,8 @@ export const updateVehicle = async (
       return;
     }
 
+    const { price, quantity } = req.body;
+
     if (price !== undefined && price < 0) {
       res.status(400).json({
         message: "Price cannot be negative",
@@ -93,14 +115,20 @@ export const updateVehicle = async (
       return;
     }
 
-    if (quantity !== undefined && quantity < 0) {
+    if (
+      quantity !== undefined &&
+      quantity < 0
+    ) {
       res.status(400).json({
         message: "Quantity cannot be negative",
       });
       return;
     }
 
-    const vehicle = await updateVehicleById(id, req.body);
+    const vehicle = await updateVehicleById(
+      id,
+      req.body
+    );
 
     if (!vehicle) {
       res.status(404).json({
@@ -120,12 +148,20 @@ export const updateVehicle = async (
   }
 };
 
+
 export const deleteVehicle = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
+
+    if (typeof id !== "string") {
+      res.status(400).json({
+        message: "Invalid vehicle ID",
+      });
+      return;
+    }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({
@@ -152,6 +188,7 @@ export const deleteVehicle = async (
     });
   }
 };
+
 
 export const searchVehicle = async (
   req: Request,
@@ -192,18 +229,28 @@ export const searchVehicle = async (
       min > max
     ) {
       res.status(400).json({
-        message: "Minimum price cannot exceed maximum price",
+        message:
+          "Minimum price cannot exceed maximum price",
       });
       return;
     }
 
     const vehicles = await searchVehicles({
-      make: typeof make === "string" ? make : undefined,
-      model: typeof model === "string" ? model : undefined,
+      make:
+        typeof make === "string"
+          ? make
+          : undefined,
+
+      model:
+        typeof model === "string"
+          ? model
+          : undefined,
+
       category:
         typeof category === "string"
           ? category
           : undefined,
+
       minPrice: min,
       maxPrice: max,
     });
@@ -226,6 +273,13 @@ export const purchaseVehicle = async (
   try {
     const { id } = req.params;
 
+    if (typeof id !== "string") {
+      res.status(400).json({
+        message: "Invalid vehicle ID",
+      });
+      return;
+    }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: "Invalid vehicle ID",
@@ -233,6 +287,7 @@ export const purchaseVehicle = async (
       return;
     }
 
+    // Check if the vehicle exists
     const vehicle = await getVehicleById(id);
 
     if (!vehicle) {
@@ -242,6 +297,7 @@ export const purchaseVehicle = async (
       return;
     }
 
+    // Check stock
     if (vehicle.quantity <= 0) {
       res.status(400).json({
         message: "Vehicle out of stock",
@@ -249,8 +305,11 @@ export const purchaseVehicle = async (
       return;
     }
 
-    const updatedVehicle = await purchaseVehicleById(id);
+    // Atomically decrease quantity
+    const updatedVehicle =
+      await purchaseVehicleById(id);
 
+    // Handles case where stock changed between checks
     if (!updatedVehicle) {
       res.status(400).json({
         message: "Vehicle out of stock",
@@ -269,6 +328,7 @@ export const purchaseVehicle = async (
   }
 };
 
+
 export const restockVehicle = async (
   req: Request,
   res: Response
@@ -276,6 +336,13 @@ export const restockVehicle = async (
   try {
     const { id } = req.params;
     const { quantity } = req.body;
+
+    if (typeof id !== "string") {
+      res.status(400).json({
+        message: "Invalid vehicle ID",
+      });
+      return;
+    }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({
@@ -290,7 +357,8 @@ export const restockVehicle = async (
       quantity <= 0
     ) {
       res.status(400).json({
-        message: "Quantity must be a positive integer",
+        message:
+          "Quantity must be a positive integer",
       });
       return;
     }
