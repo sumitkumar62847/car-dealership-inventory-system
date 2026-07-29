@@ -6,7 +6,7 @@ import vehicleRoutes from "./routes/vehicle.routes";
 
 const app = express();
 
-app.use(cors({origin: "http://localhost:3000"}));
+app.use(cors({origin: "https://car-dealership-inventory-system-ten-sigma.vercel.app"}));
 app.use(express.json());
 
 app.get("/health", (req, res) => {
