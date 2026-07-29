@@ -1,11 +1,82 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { getVehicles } from "../services/api";
+import VehicleForm from "../components/VehicleForm";
+import { getVehicles,createVehicle, updateVehicle, } from "../services/api";
+
 
 const AdminDashboard = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedVehicle, setSelectedVehicle] =
+    useState(null);
+
+    const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [formResetKey, setFormResetKey] = useState(0);
+
+  const handleAddVehicle = async (vehicleData) => {
+    try {
+        setSaving(true);
+        setError("");
+
+        const data = await createVehicle(vehicleData);
+
+        setVehicles((currentVehicles) => [
+        ...currentVehicles,
+        data.vehicle,
+        ]);
+
+        setFormResetKey((key) => key + 1);
+    } catch (error) {
+        setError(
+        error.response?.data?.message ||
+            "Failed to add vehicle"
+        );
+    } finally {
+        setSaving(false);
+    }
+    };
+
+    const handleUpdateVehicle = async (vehicleData) => {
+        if (!selectedVehicle) {
+            return;
+        }
+
+        try {
+            setSaving(true);
+            setError("");
+
+            const data = await updateVehicle(
+            selectedVehicle._id,
+            vehicleData
+            );
+
+            setVehicles((currentVehicles) =>
+            currentVehicles.map((vehicle) =>
+                vehicle._id === selectedVehicle._id
+                ? data.vehicle
+                : vehicle
+            )
+            );
+
+            setSelectedVehicle(null);
+        } catch (error) {
+            setError(
+            error.response?.data?.message ||
+                "Failed to update vehicle"
+            );
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleVehicleSubmit = async (vehicleData) => {
+        if (selectedVehicle) {
+            await handleUpdateVehicle(vehicleData);
+        } else {
+            await handleAddVehicle(vehicleData);
+        }
+        };
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -38,6 +109,14 @@ const AdminDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-800">
             Admin Dashboard
           </h1>
+
+          <VehicleForm
+            key={formResetKey}
+            vehicle={selectedVehicle}
+            onSubmit={handleVehicleSubmit}
+            onCancel={() => setSelectedVehicle(null)}
+            loading={saving}
+            />
 
           <p className="mt-2 text-gray-600">
             Manage dealership vehicle inventory.
@@ -150,9 +229,15 @@ const AdminDashboard = () => {
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 text-gray-400">
-                        Actions coming next
-                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedVehicle(vehicle)}
+                            className="rounded-lg bg-yellow-500 px-3 py-2 text-sm font-medium text-white hover:bg-yellow-600"
+                        >
+                            Edit
+                        </button>
+                        </td>
                     </tr>
                   ))}
                 </tbody>
