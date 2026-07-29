@@ -113,7 +113,7 @@ export const purchaseVehicleById = async (
       },
     },
     {
-      new: true,
+      returnDocument: "after",
     }
   );
 };

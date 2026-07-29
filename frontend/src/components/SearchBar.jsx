@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getVehicles } from "../services/api";
+import { formatPrice } from "../utils/formatters";
 
 const FilterBar = ({ onSearch, onReset }) => {
   const [carData, setCarData] = useState({});
@@ -203,15 +204,6 @@ const FilterBar = ({ onSearch, onReset }) => {
     onReset();
   };
 
-
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
 
 

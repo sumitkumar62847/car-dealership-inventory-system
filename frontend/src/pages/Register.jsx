@@ -561,22 +561,6 @@ const ImageFeature = ({ title, text }) => {
 };
 
 
-const CarIcon = () => (
-  <svg
-    className="h-[18px] w-[18px]"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.8}
-      d="M4 15l1.5-5h13L20 15M6 15v2m12-2v2M7 10l1.5-4h7L17 10M5 15h14"
-    />
-  </svg>
-);
-
 const UserIcon = () => (
   <svg
     className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#86868b]"

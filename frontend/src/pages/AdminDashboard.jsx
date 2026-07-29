@@ -10,6 +10,7 @@ import {
   deleteVehicle,
   restockVehicle,
 } from "../services/api";
+import { formatPrice } from "../utils/formatters";
 
 const AdminDashboard = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -258,14 +259,6 @@ const AdminDashboard = () => {
       (vehicle) => vehicle.quantity <= 0
     ).length;
 
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(Number(price));
-  };
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-[#f7f8fa] font-sans text-[#1d1d1f] antialiased">
