@@ -30,7 +30,7 @@ describe("VehicleCard", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("$45,000")
+      screen.getByText("₹45,000")
     ).toBeInTheDocument();
 
     expect(

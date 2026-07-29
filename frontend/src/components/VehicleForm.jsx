@@ -553,9 +553,7 @@ const VehicleForm = ({
               </svg>
             )}
 
-            {!loading && !isEditing && (
-              <span className="text-lg leading-none">+</span>
-            )}
+           
 
             {loading
               ? "Saving..."
