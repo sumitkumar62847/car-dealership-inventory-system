@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import {
   getVehicles,
   searchVehicles,
+  purchaseVehicle,
 } from "../services/api";
 
 import SearchBar from "../components/SearchBar";
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [purchasingId, setPurchasingId] = useState(null);
 
   const fetchVehicles = async () => {
     try {
@@ -56,6 +58,29 @@ const Dashboard = () => {
 
     const handleReset = async () => {
         await fetchVehicles();
+    };
+    const handlePurchase = async (vehicleId) => {
+        try {
+            setPurchasingId(vehicleId);
+            setError("");
+
+            const data = await purchaseVehicle(vehicleId);
+
+            setVehicles((currentVehicles) =>
+            currentVehicles.map((vehicle) =>
+                vehicle._id === vehicleId
+                ? data.vehicle
+                : vehicle
+            )
+            );
+        } catch (error) {
+            setError(
+            error.response?.data?.message ||
+                "Failed to purchase vehicle"
+            );
+        } finally {
+            setPurchasingId(null);
+        }
     };
 
   useEffect(() => {
@@ -116,6 +141,10 @@ const Dashboard = () => {
                 <VehicleCard
                     key={vehicle._id}
                     vehicle={vehicle}
+                    onPurchase={handlePurchase}
+                    purchasing={
+                                purchasingId === vehicle._id
+                            }
                 />
                 ))}
             </div>

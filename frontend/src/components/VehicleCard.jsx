@@ -1,4 +1,4 @@
-const VehicleCard = ({ vehicle }) => {
+const VehicleCard = ({ vehicle,onPurchase,purchasing, }) => {
   return (
     <div className="rounded-xl bg-white p-6 shadow transition hover:shadow-lg">
       <div className="flex items-start justify-between gap-4">
@@ -48,6 +48,21 @@ const VehicleCard = ({ vehicle }) => {
             {vehicle.quantity}
           </span>
         </div>
+        <button
+            type="button"
+            onClick={() => onPurchase(vehicle._id)}
+            disabled={
+                vehicle.quantity === 0 ||
+                purchasing
+            }
+            className="mt-6 w-full rounded-lg bg-blue-600 py-2.5 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+            >
+            {purchasing
+                ? "Purchasing..."
+                : vehicle.quantity === 0
+                ? "Out of Stock"
+                : "Purchase"}
+        </button>
       </div>
     </div>
   );
