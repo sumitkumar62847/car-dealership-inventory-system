@@ -7,11 +7,17 @@ The application provides separate functionality for customers and administrators
 The main purpose of this project was to build a complete full-stack application while focusing on authentication, role-based authorization, REST APIs, inventory management, validation, and automated testing.
 
 ---
-The application is deployed with the frontend hosted on Vercel and the backend API hosted on Render.
 
-- **Frontend:** https://car-dealership-inventory-system-ten-sigma.vercel.app/
+## Live Application and Repository
+
+The application is fully deployed, with the React frontend hosted on Vercel and the Node.js/Express API hosted on Render.
+
+- **Live Application:** https://car-dealership-inventory-system-ten-sigma.vercel.app/
 - **Backend API:** https://car-dealership-inventory-system-pvrr.onrender.com
 - **Source Code:** https://github.com/sumitkumar62847/car-dealership-inventory-system
+- **AI Tooling History:** [PROMPTS.md](./PROMPTS.md)
+
+---
 
 ## Features
 
@@ -38,6 +44,29 @@ The application is deployed with the frontend hosted on Vercel and the backend A
 - Delete vehicles
 - Restock inventory
 - View current stock status
+
+---
+
+
+## Application Screenshots
+
+The following screenshots show the main flows of the final application.
+
+### Login
+
+![Login Page](./screenshots/login.png)
+
+### User Dashboard
+
+![User Dashboard](./screenshots/dashboard.png)
+
+### Search and Filtering
+
+![Search and Filtering](./screenshots/search.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
 
 ---
 
@@ -111,6 +140,12 @@ car-dealership/
 │   │   └── App.js
 │   │
 │   └── package.json
+│
+├── screenshots/
+│   ├── login.png
+│   ├── dashboard.png
+│   ├── search.png
+│   └── admin-dashboard.png
 │
 ├── README.md
 ├── PROMPTS.md
@@ -299,7 +334,7 @@ Make sure you have the following installed:
 
 ```bash
 git clone https://github.com/sumitkumar62847/car-dealership-inventory-system.git
-cd car-dealership
+cd car-dealership-inventory-system
 ```
 
 ---
@@ -372,7 +407,7 @@ Make sure the backend is also running when using functionality that requires the
 
 ---
 
-## Testing
+## Test Report
 
 Automated tests are included for both the backend and frontend.
 
@@ -386,6 +421,8 @@ Run the backend tests with:
 cd backend
 npm test
 ```
+
+The backend suite verifies the API, authentication/authorization middleware, inventory operations, validation, and error responses. The final test output can be reproduced locally with the command above.
 
 The backend tests cover important functionality including:
 
@@ -495,6 +532,26 @@ Sensitive values such as the MongoDB connection string and JWT secret are stored
 
 ---
 
+## My AI Usage
+
+I used ChatGPT as a development assistant while building and improving this project. AI was used as a supporting tool for discussing implementation approaches, debugging errors, reviewing code, improving automated tests, and troubleshooting build and deployment issues.
+
+Some of the areas where AI assistance was useful included:
+
+- debugging frontend and backend test failures
+- understanding Jest, Supertest, and React Testing Library errors
+- improving test cases for important application flows
+- resolving TypeScript build and type errors
+- reviewing authentication, authorization, and inventory logic
+- troubleshooting frontend and backend deployment configuration
+- improving project documentation and README organization
+
+I did not treat AI-generated suggestions as automatically correct or as finished code. Suggestions were reviewed against the existing project, adapted where necessary, and verified by running builds, tests, API requests, and the deployed application. In several cases, suggested changes required additional debugging before they worked correctly with the project.
+
+The complete AI tooling conversation and prompts used during development are documented in [PROMPTS.md](./PROMPTS.md).
+
+---
+
 ## What I Learned
 
 Building this project gave me practical experience working on a complete application from the API layer to the frontend.
@@ -534,7 +591,6 @@ There are several features that could be added as the project grows:
 - Email notifications
 - End-to-end testing
 - CI/CD workflow
-- Production deployment
 
 ---
 
