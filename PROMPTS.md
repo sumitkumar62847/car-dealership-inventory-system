@@ -949,52 +949,6 @@ The TypeScript backend generates JavaScript inside `dist/`, so that directory ca
 
 ---
 
-# How I Used AI During This Project
-
-AI was most useful when I already had a specific problem to solve.
-
-For example, instead of asking it to generate the entire project at once, I generally worked feature by feature:
-
-```text
-Implement feature
-      ↓
-Run application/tests
-      ↓
-Inspect error
-      ↓
-Ask a focused question
-      ↓
-Understand suggested fix
-      ↓
-Update code
-      ↓
-Run tests again
-```
-
-This process was particularly useful for debugging because many problems were not obvious from reading one file alone.
-
-Examples included:
-
-- Jest tests accidentally nested inside other tests
-- API routes returning 404 during tests
-- Incorrect assumptions about rendered currency
-- SearchBar tests calling the real backend
-- React asynchronous state update warnings
-- React Router/Jest compatibility problems
-- Multiple matching elements in React Testing Library
-- Mongoose deprecation warnings
-- Inventory quantity updates
-
-I also tried to verify generated suggestions instead of accepting them only because they looked correct.
-
-For backend APIs, I used automated tests and manual Thunder Client requests.
-
-For frontend functionality, I ran the application and used Jest/React Testing Library.
-
-This helped make AI part of the development and debugging process rather than a replacement for testing the application.
-
----
-
 # Main Areas Where AI Assisted
 
 During this project, AI assistance was mainly used for:
